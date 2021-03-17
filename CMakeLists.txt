@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.19)
 
-set(PROJECT "Parallel_Sorting")
+set(PROJECT "Scalar_product_of_vectors")
 
 project(${PROJECT})
 
@@ -13,6 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if (UNIX)
     find_package(Threads REQUIRED)
+    find_package(OpenMP REQUIRED)
 endif (UNIX)
 
 if(NOT DEFINED HEADERS)
@@ -32,5 +33,10 @@ add_executable(${PROJECT}
     )
 
 if (UNIX)
-    target_link_libraries (${PROJECT} ${CMAKE_THREAD_LIBS_INIT})
+    if (OPENMP_FOUND)
+        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+        set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+    endif()
+    target_link_libraries (${PROJECT} PUBLIC ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 endif (UNIX)
